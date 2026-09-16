@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Опросник: что бот должен делать — Арккона</title>
+<style>
+  :root{
+    --accent:#B4451F; --ink:#1E1B18; --muted:#6B625B;
+    --line:#E4DDD6; --bg:#FBF8F5; --card:#FFFFFF; --soft:#F4EEE8;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+       background:var(--bg);color:var(--ink);line-height:1.55;font-size:16px;
+       padding:18px 14px 120px;-webkit-text-size-adjust:100%}
+  .wrap{max-width:680px;margin:0 auto}
+  .kick{color:var(--accent);font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:600}
+  h1{font-size:25px;line-height:1.22;margin:8px 0 10px;letter-spacing:-.01em}
+  .lead{color:var(--muted);font-size:15px;margin-bottom:20px}
+  section{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 16px;margin-bottom:16px}
+  h2{font-size:17px;margin-bottom:6px}
+  .sub{color:var(--muted);font-size:13.5px;margin-bottom:14px}
+  .have{list-style:none;font-size:14.5px}
+  .have li{padding-left:24px;position:relative;margin-bottom:7px}
+  .have li:before{content:"✓";position:absolute;left:2px;color:var(--accent);font-weight:700}
+  .q{margin-bottom:22px}
+  .q:last-child{margin-bottom:4px}
+  .qlabel{font-weight:600;font-size:15.5px;margin-bottom:4px}
+  .qhint{color:var(--muted);font-size:13px;margin-bottom:9px}
+  textarea,input[type=text]{width:100%;border:1px solid var(--line);background:var(--soft);
+    border-radius:10px;padding:10px 12px;font:inherit;font-size:15px;color:var(--ink);resize:vertical}
+  textarea{min-height:74px}
+  textarea:focus,input:focus{outline:2px solid rgba(180,69,31,.35);background:#fff}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 13px;
+        font-size:14px;cursor:pointer;user-select:none;transition:.12s}
+  .chip:hover{border-color:var(--accent)}
+  .chip.on{background:var(--accent);border-color:var(--accent);color:#fff}
+  .feat{border:1px solid var(--line);border-radius:11px;padding:11px 12px;margin-bottom:9px;
+        display:flex;gap:11px;align-items:flex-start;cursor:pointer;background:#fff}
+  .feat.on{border-color:var(--accent);background:#FDF4F0}
+  .box{width:20px;height:20px;border:1.5px solid var(--line);border-radius:6px;flex:0 0 20px;
+       margin-top:2px;display:flex;align-items:center;justify-content:center;font-size:13px;color:#fff}
+  .feat.on .box{background:var(--accent);border-color:var(--accent)}
+  .fname{font-weight:600;font-size:14.5px}
+  .fnote{color:var(--muted);font-size:12.5px;margin-top:2px}
+  .tag{display:inline-block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;
+       padding:2px 7px;border-radius:5px;margin-left:6px;vertical-align:1px;font-weight:700}
+  .t-yes{background:#EAF3EC;color:#2F6B3E}
+  .t-small{background:#FBEFE7;color:#A2451F}
+  .t-talk{background:#EFEAF4;color:#5B4A79}
+  pre#out{white-space:pre-wrap;word-wrap:break-word;background:var(--soft);border:1px dashed var(--line);
+         border-radius:11px;padding:13px;font-size:13.5px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  .btns{display:flex;flex-wrap:wrap;gap:9px;margin-top:13px}
+  button,a.btn{border:0;border-radius:10px;padding:11px 15px;font:inherit;font-size:14.5px;font-weight:600;
+        cursor:pointer;text-decoration:none;display:inline-block}
+  .primary{background:var(--accent);color:#fff}
+  .ghost{background:#fff;color:var(--ink);border:1px solid var(--line)}
+  .bar{position:fixed;left:0;right:0;bottom:0;background:rgba(251,248,245,.96);border-top:1px solid var(--line);
+       padding:10px 14px;backdrop-filter:blur(6px)}
+  .bar .wrap{display:flex;align-items:center;gap:12px;justify-content:space-between}
+  .pct{font-size:13.5px;color:var(--muted);font-weight:600}
+  .track{flex:1;height:7px;background:var(--line);border-radius:99px;overflow:hidden}
+  .fill{height:100%;width:0;background:var(--accent);transition:.25s}
+  .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:78px;background:var(--ink);color:#fff;
+        font-size:14px;padding:9px 15px;border-radius:99px;opacity:0;pointer-events:none;transition:.25s}
+  .toast.on{opacity:1}
+  .foot{color:var(--muted);font-size:12.5px;text-align:center;margin-top:6px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="kick">Арккона · опросник по боту</div>
+  <h1>Что бот должен делать за вас</h1>
+  <p class="lead">Заполните на телефоне — займёт 5–7 минут. Ответы никуда не уходят сами: в конце страницы соберётся готовый текст, и вы отправите его мне одним сообщением. Если закроете страницу — ответы сохранятся и вернутся, когда откроете снова.</p>
+
+  <section>
+    <h2>Что бот умеет сегодня</h2>
+    <div class="sub">Это уже работает — чтобы вы понимали, с чего начинаем.</div>
+    <ul class="have">
+      <li>Принимает заявку с сайта: имя → услуга → контакт</li>
+      <li>Меню на русском и польском — клиент выбирает сам</li>
+      <li>Кнопки вместо печати: клиенту почти не нужно ничего набирать</li>
+      <li>Присылает вам заявку сразу, как её оставили</li>
+      <li>Хранит заявки и отзывы в базе — ничего не теряется при обновлениях</li>
+      <li>Ссылка с параметром: можно дать клиенту ссылку, ведущую сразу в нужный шаг</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Вопросы</h2>
+    <div class="sub">Отвечайте как удобно: коротко, списком, хоть одним словом. Где есть варианты — нажмите, что ближе.</div>
+
+    <div class="q" data-q="q1">
+      <div class="qlabel">1. Какие вопросы вы задаёте новому клиенту почти всегда?</div>
+      <div class="qhint">Пишите своими словами, в том порядке, как спрашиваете. Это главный вопрос всей страницы.</div>
+      <textarea data-f="q1" placeholder="Например: форма налогообложения, VAT или нет, откуда контрагенты..."></textarea>
+    </div>
+
+    <div class="q" data-q="q2">
+      <div class="qlabel">2. Какие ответы вы ждёте на них — и какие ответы чаще всего приходят не те?</div>
+      <div class="qhint">Здесь важно, где клиент путается: тогда бот сможет подсказать или переспросить.</div>
+      <textarea data-f="q2" placeholder="Что должен ответить клиент, и что он обычно отвечает не так"></textarea>
+    </div>
+
+    <div class="q" data-q="q3">
+      <div class="qlabel">3. Что клиент должен получить в конце опроса?</div>
+      <div class="chips" data-f="q3" data-multi="1">
+        <span class="chip">Ничего, просто «спасибо»</span>
+        <span class="chip">Список документов, которые нужны от него</span>
+        <span class="chip">Сроки и стоимость</span>
+        <span class="chip">Приглашение на звонок/встречу</span>
+        <span class="chip">Ваш прямой контакт</span>
+      </div>
+    </div>
+
+    <div class="q" data-q="q4">
+      <div class="qlabel">4. Кто должен получать ответы клиента?</div>
+      <div class="chips" data-f="q4" data-multi="1">
+        <span class="chip">Только я</span>
+        <span class="chip">Я и Индра</span>
+        <span class="chip">Кто-то ещё из бюро</span>
+        <span class="chip">Достаточно, если лежит в базе</span>
+      </div>
+    </div>
+
+    <div class="q" data-q="q5">
+      <div class="qlabel">5. На каком языке бот должен спрашивать?</div>
+      <div class="chips" data-f="q5">
+        <span class="chip">Только по-русски</span>
+        <span class="chip">Только по-польски</span>
+        <span class="chip">Пусть клиент выбирает сам</span>
+      </div>
+    </div>
+
+    <div class="q" data-q="q6">
+      <div class="qlabel">6. Как клиент попадёт в опросник?</div>
+      <div class="chips" data-f="q6" data-multi="1">
+        <span class="chip">Я сама отправляю ссылку</span>
+        <span class="chip">Ссылка с сайта</span>
+        <span class="chip">QR-код</span>
+        <span class="chip">Бот предлагает сразу после заявки</span>
+      </div>
+    </div>
+
+    <div class="q" data-q="q7">
+      <div class="qlabel">7. Если клиент бросил опрос на середине — напоминать ему?</div>
+      <div class="chips" data-f="q7">
+        <span class="chip">Да, вежливо напомнить</span>
+        <span class="chip">Нет, не давить</span>
+        <span class="chip">Лучше сообщите мне, я сама</span>
+      </div>
+    </div>
+
+    <div class="q" data-q="q8">
+      <div class="qlabel">8. Сколько времени сейчас уходит на одного нового клиента в переписке?</div>
+      <div class="chips" data-f="q8">
+        <span class="chip">До 15 минут</span>
+        <span class="chip">15–30 минут</span>
+        <span class="chip">30–60 минут</span>
+        <span class="chip">Больше часа</span>
+      </div>
+    </div>
+
+    <div class="q" data-q="q9">
+      <div class="qlabel">9. Что бот точно не должен делать?</div>
+      <div class="qhint">Ваши границы: где он обязан молчать или передать разговор вам.</div>
+      <textarea data-f="q9" placeholder="Например: не давать цену, не советовать по налогам, не писать клиенту дважды"></textarea>
+    </div>
+  </section>
+
+  <section>
+    <h2>Что может появиться в боте</h2>
+    <div class="sub">Отметьте, что вам нужно. Под каждым пунктом — честно: сколько это работы <em>при том коде, который есть сейчас</em>.</div>
+    <div id="feats"></div>
+  </section>
+
+  <section>
+    <h2>Ваши ответы готовым текстом</h2>
+    <div class="sub">Скопируйте и отправьте мне — любым способом, который у вас сейчас работает. Или нажмите «письмом» / «в Telegram».</div>
+    <pre id="out">Заполните вопросы выше — текст появится здесь.</pre>
+    <div class="btns">
+      <button class="primary" id="copy">Скопировать</button>
+      <button class="ghost" id="dl">Скачать файлом</button>
+      <a class="btn ghost" id="mail">Отправить письмом</a>
+      <a class="btn ghost" id="tg">Открыть в Telegram</a>
+    </div>
+    <div class="foot">Ничего не отправляется автоматически: всё делаете вы, одним нажатием.</div>
+  </section>
+
+  <div class="foot">Арккона · страница только для Вас — в поиске её нет</div>
+</div>
+
+<div class="bar"><div class="wrap">
+  <div class="track"><div class="fill" id="fill"></div></div>
+  <div class="pct" id="pct">0%</div>
+</div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const MAILTO = "1ndradev4@proton.me";
+const TG = "indradev_";
+
+const FEATURES = [
+  {id:"f1", name:"Опросник: 10–14 вопросов кнопками", note:"Та же машина шагов, что уже работает в заявке", tag:"small"},
+  {id:"f2", name:"Пропуск лишних вопросов", note:"Нет VAT — про VAT не спрашиваем", tag:"small"},
+  {id:"f3", name:"Клиент может продолжить с того места, где остановился", note:"Сейчас шаг живёт в памяти процесса — перенесём в базу", tag:"small"},
+  {id:"f4", name:"Карточка с ответами приходит Вам в Telegram", note:"Отправка сообщений уже есть — добавим оформление", tag:"small"},
+  {id:"f5", name:"Список всех опросов в базе", note:"По образцу списка заявок, который уже есть", tag:"small"},
+  {id:"f6", name:"Ссылка и QR на опросник для клиента", note:"Ссылки с параметром уже поддерживаются", tag:"yes"},
+  {id:"f7", name:"Напоминание клиенту, если он бросил на середине", note:"Требует аккуратности: напоминать часто — плохо", tag:"talk"},
+  {id:"f8", name:"Польская версия вопросов", note:"Двуязычное меню уже есть — вопросы переведём", tag:"yes"},
+  {id:"f9", name:"Выгрузка ответов в файл (Excel/PDF)", note:"Скажите, в каком виде Вам удобно смотреть", tag:"talk"}
+];
+const TAGLABEL = {yes:["уже есть","t-yes"], small:["небольшая доработка","t-small"], talk:["нужно обсудить","t-talk"]};
+
+const state = JSON.parse(localStorage.getItem("arkkona_bot_form") || "{}");
+const $ = (s,r=document)=>r.querySelector(s);
+const $$ = (s,r=document)=>[...r.querySelectorAll(s)];
+
+function save(){ localStorage.setItem("arkkona_bot_form", JSON.stringify(state)); }
+function toast(t){ const el=$("#toast"); el.textContent=t; el.classList.add("on"); setTimeout(()=>el.classList.remove("on"),1600); }
+
+// features
+const fwrap=$("#feats");
+FEATURES.forEach(f=>{
+  const [tl,tc]=TAGLABEL[f.tag];
+  const el=document.createElement("div");
+  el.className="feat"+(state[f.id]?" on":"");
+  el.innerHTML=`<div class="box">${state[f.id]?"✓":""}</div><div><div class="fname">${f.name}<span class="tag ${tc}">${tl}</span></div><div class="fnote">${f.note}</div></div>`;
+  el.onclick=()=>{ state[f.id]=!state[f.id]; el.classList.toggle("on",!!state[f.id]); $(".box",el).textContent=state[f.id]?"✓":""; save(); render(); };
+  fwrap.appendChild(el);
+});
+
+// text inputs
+$$("textarea[data-f]").forEach(t=>{ if(state[t.dataset.f]) t.value=state[t.dataset.f];
+  t.addEventListener("input",()=>{ state[t.dataset.f]=t.value.trim(); save(); render(); }); });
+
+// chips
+$$(".chips[data-f]").forEach(c=>{
+  const key=c.dataset.f, multi=c.dataset.multi==="1";
+  $$(".chip",c).forEach(ch=>{
+    const val=ch.textContent.trim();
+    const cur=state[key];
+    const on = multi ? Array.isArray(cur)&&cur.includes(val) : cur===val;
+    if(on) ch.classList.add("on");
+    ch.onclick=()=>{
+      if(multi){ let arr=Array.isArray(state[key])?state[key]:[]; arr=arr.includes(val)?arr.filter(x=>x!==val):arr.concat(val); state[key]=arr; ch.classList.toggle("on"); }
+      else { const same=state[key]===val; state[key]=same?"":val; $$(".chip",c).forEach(x=>x.classList.toggle("on",!same&&x.textContent.trim()===val)); }
+      save(); render();
+    };
+  });
+});
+
+function filled(){
+  const ids=["q1","q2","q3","q4","q5","q6","q7","q8","q9"];
+  const textDone=ids.filter(i=>state[i]&&String(state[i]).length>1).length;
+  const featDone=FEATURES.filter(f=>state[f.id]).length?1:0;
+  const total=ids.length+1;
+  return Math.round((textDone+featDone)/total*100);
+}
+function progress(){ const p=filled(); $("#fill").style.width=p+"%"; $("#pct").textContent=p+"%"; }
+
+const QNAMES={q3:"Что клиент получает в конце",q4:"Кто получает ответы",q5:"Язык вопросов",q6:"Как попадает в опросник",q7:"Напоминания",q8:"Время на одного клиента",q9:"Чего бот не должен делать"};
+function summary(){
+  const L=[];
+  L.push("ОПРОСНИК ПО БОТУ — ответы Ольги");
+  L.push("");
+  L.push("1) Вопросы, которые я задаю новому клиенту почти всегда:");
+  L.push(state.q1||"— не заполнено —");
+  L.push("");
+  L.push("2) Какие ответы жду и где клиенты путаются:");
+  L.push(state.q2||"— не заполнено —");
+  ["q3","q4","q5","q6","q7","q8"].forEach(k=>{
+    const v=state[k]; const s=Array.isArray(v)?v.join(", "):(v||"— не выбрано —");
+    L.push(""); L.push(`${k[1]}) ${QNAMES[k]}: ${s}`);
+  });
+  L.push("");
+  L.push("9) Чего бот не должен делать:");
+  L.push(state.q9||"— не заполнено —");
+  const picked=FEATURES.filter(f=>state[f.id]).map(f=>"- "+f.name);
+  L.push("");
+  L.push("Что нужно из возможностей бота:");
+  L.push(picked.length?picked.join("\n"):"— ничего не отмечено —");
+  L.push("");
+  L.push("Отправлено со страницы опросника.");
+  return L.join("\n");
+}
+function render(){
+  const txt=summary();
+  const has=Object.keys(state).length>0;
+  $("#out").textContent = has ? txt : "Заполните вопросы выше — текст появится здесь.";
+  const subj=encodeURIComponent("Опросник по боту — ответы");
+  const body=encodeURIComponent(txt.slice(0,1400));
+  $("#mail").href=`mailto:${MAILTO}?subject=${subj}&body=${body}`;
+  $("#tg").href=`https://t.me/${TG}?text=${encodeURIComponent(txt.slice(0,900))}`;
+  progress();
+}
+$("#copy").onclick=async()=>{
+  const t=summary();
+  try{ await navigator.clipboard.writeText(t); toast("Скопировано — вставьте в сообщение"); }
+  catch(e){ const ta=document.createElement("textarea"); ta.value=t; document.body.appendChild(ta); ta.select();
+            document.execCommand("copy"); ta.remove(); toast("Скопировано"); }
+};
+$("#dl").onclick=()=>{
+  const blob=new Blob([summary()],{type:"text/plain;charset=utf-8"});
+  const a=document.createElement("a"); a.href=URL.createObjectURL(blob);
+  a.download="otvety-po-botu.txt"; a.click(); URL.revokeObjectURL(a.href); toast("Файл сохранён");
+};
+render();
+</script>
+</body>
+</html>
