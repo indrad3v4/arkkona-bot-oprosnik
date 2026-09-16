@@ -81,7 +81,7 @@
 <div class="wrap">
   <div class="kick">Арккона · опросник по боту</div>
   <h1>Что бот должен делать за вас</h1>
-  <p class="lead">Заполните на телефоне — займёт 5–7 минут. Ответы никуда не уходят сами: в конце страницы соберётся готовый текст, и вы отправите его мне одним сообщением. Если закроете страницу — ответы сохранятся и вернутся, когда откроете снова.</p>
+  <p class="lead">Заполните на телефоне — займёт 5–7 минут. В конце нажмите одну кнопку «Отправить ответы» — они сразу придут мне, и переписываться не придётся. Если закроете страницу, ответы сохранятся и вернутся, когда откроете снова.</p>
 
   <section>
     <h2>Что бот умеет сегодня</h2>
@@ -199,16 +199,17 @@
   </section>
 
   <section>
-    <h2>Ваши ответы готовым текстом</h2>
-    <div class="sub">Скопируйте и отправьте мне — любым способом, который у вас сейчас работает. Или нажмите «письмом» / «в Telegram».</div>
+    <h2>Отправить ответы</h2>
+    <div class="sub">Одна кнопка — и я всё вижу. Если связи нет, есть запасные пути: скачать файлом, письмом или в Telegram.</div>
     <pre id="out">Заполните вопросы выше — текст появится здесь.</pre>
     <div class="btns">
-      <button class="primary" id="copy">Скопировать</button>
+      <button class="primary" id="send">Отправить ответы</button>
+      <button class="ghost" id="copy">Скопировать текстом</button>
       <button class="ghost" id="dl">Скачать файлом</button>
       <a class="btn ghost" id="mail">Отправить письмом</a>
       <a class="btn ghost" id="tg">Открыть в Telegram</a>
     </div>
-    <div class="foot">Ничего не отправляется автоматически: всё делаете вы, одним нажатием.</div>
+    <div class="foot" id="sendstate">Нажимаете «Отправить ответы» — Индра получает их и видит, что Вы ответили.</div>
   </section>
 
   <div class="foot">Арккона · страница только для Вас — в поиске её нет</div>
@@ -222,6 +223,7 @@
 
 <script>
 const MAILTO = "1ndradev4@proton.me";
+const SINK = "https://ntfy.sh/arkkona-bot-form-0064bd36";
 const TG = "indradev_";
 
 const FEATURES = [
@@ -327,6 +329,21 @@ $("#copy").onclick=async()=>{
   try{ await navigator.clipboard.writeText(t); toast("Скопировано — вставьте в сообщение"); }
   catch(e){ const ta=document.createElement("textarea"); ta.value=t; document.body.appendChild(ta); ta.select();
             document.execCommand("copy"); ta.remove(); toast("Скопировано"); }
+};
+$("#send").onclick=async()=>{
+  const btn=$("#send"); const had=btn.textContent;
+  btn.disabled=true; btn.textContent="Отправляю...";
+  const stamp=new Date().toISOString().slice(0,16).replace("T"," ");
+  const body=summary()+"\n\n[отправлено со страницы: "+stamp+" | id="+Math.random().toString(36).slice(2,10)+"]";
+  try{
+    const r=await fetch(SINK,{method:"POST",headers:{"Title":"Опросник по боту — ответы","Priority":"default"},body:body});
+    if(!r.ok) throw new Error(r.status);
+    $("#sendstate").textContent="✓ Ответы отправлены — Индра их получил. Спасибо!";
+    toast("Отправлено ✓");
+  }catch(e){
+    $("#sendstate").textContent="Не получилось отправить — нажмите «Скопировать текстом» и пришлите как удобно.";
+    toast("Не отправилось — используйте запасной путь");
+  }finally{ btn.disabled=false; btn.textContent=had; }
 };
 $("#dl").onclick=()=>{
   const blob=new Blob([summary()],{type:"text/plain;charset=utf-8"});
