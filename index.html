@@ -37,6 +37,11 @@
         font-size:14px;cursor:pointer;user-select:none;transition:.12s}
   .chip:hover{border-color:var(--accent)}
   .chip.on{background:var(--accent);border-color:var(--accent);color:#fff}
+  .chip:before{content:"○ "}
+  .chips[data-multi="1"] .chip:before{content:"☐ "}
+  .chip.on:before{content:"● "}
+  .chips[data-multi="1"] .chip.on:before{content:"☑ "}
+  .pick{font-size:12.5px;color:var(--accent);font-weight:600;margin-bottom:7px}
   .feat{border:1px solid var(--line);border-radius:11px;padding:11px 12px;margin-bottom:9px;
         display:flex;gap:11px;align-items:flex-start;cursor:pointer;background:#fff}
   .feat.on{border-color:var(--accent);background:#FDF4F0}
@@ -106,6 +111,7 @@
 
     <div class="q" data-q="q3">
       <div class="qlabel">3. Что клиент должен получить в конце опроса?</div>
+      <div class="pick">можно несколько</div>
       <div class="chips" data-f="q3" data-multi="1">
         <span class="chip">Ничего, просто «спасибо»</span>
         <span class="chip">Список документов, которые нужны от него</span>
@@ -116,17 +122,19 @@
     </div>
 
     <div class="q" data-q="q4">
-      <div class="qlabel">4. Кто должен получать ответы клиента?</div>
+      <div class="qlabel">4. Кому бот присылает ответы клиента?</div>
+      <div class="pick">можно несколько</div>
       <div class="chips" data-f="q4" data-multi="1">
-        <span class="chip">Только я</span>
-        <span class="chip">Я и Индра</span>
-        <span class="chip">Кто-то ещё из бюро</span>
-        <span class="chip">Достаточно, если лежит в базе</span>
+        <span class="chip">Мне лично в Telegram</span>
+        <span class="chip">Индре (он настраивает бота)</span>
+        <span class="chip">Кому-то ещё из бюро</span>
+        <span class="chip">Никому не присылать — мне достаточно видеть это в списке, когда зайду</span>
       </div>
     </div>
 
     <div class="q" data-q="q5">
       <div class="qlabel">5. На каком языке бот должен спрашивать?</div>
+      <div class="pick">можно выбрать один</div>
       <div class="chips" data-f="q5">
         <span class="chip">Только по-русски</span>
         <span class="chip">Только по-польски</span>
@@ -136,6 +144,7 @@
 
     <div class="q" data-q="q6">
       <div class="qlabel">6. Как клиент попадёт в опросник?</div>
+      <div class="pick">можно несколько</div>
       <div class="chips" data-f="q6" data-multi="1">
         <span class="chip">Я сама отправляю ссылку</span>
         <span class="chip">Ссылка с сайта</span>
@@ -146,6 +155,7 @@
 
     <div class="q" data-q="q7">
       <div class="qlabel">7. Если клиент бросил опрос на середине — напоминать ему?</div>
+      <div class="pick">можно выбрать один</div>
       <div class="chips" data-f="q7">
         <span class="chip">Да, вежливо напомнить</span>
         <span class="chip">Нет, не давить</span>
@@ -155,8 +165,9 @@
 
     <div class="q" data-q="q8">
       <div class="qlabel">8. Сколько времени сейчас уходит на одного нового клиента в переписке?</div>
+      <div class="pick">можно выбрать один</div>
       <div class="chips" data-f="q8">
-        <span class="chip">До 15 минут</span>
+        <span class="chip">Меньше 15 минут</span>
         <span class="chip">15–30 минут</span>
         <span class="chip">30–60 минут</span>
         <span class="chip">Больше часа</span>
@@ -167,6 +178,14 @@
       <div class="qlabel">9. Что бот точно не должен делать?</div>
       <div class="qhint">Ваши границы: где он обязан молчать или передать разговор вам.</div>
       <textarea data-f="q9" placeholder="Например: не давать цену, не советовать по налогам, не писать клиенту дважды"></textarea>
+    </div>
+  </section>
+
+  <section>
+    <div class="q" data-q="q10">
+      <div class="qlabel">10. Что ещё важно — своими словами</div>
+      <div class="qhint">Всё, что не влезло в варианты выше: примеры из вашей практики, страхи, пожелания.</div>
+      <textarea data-f="q10" placeholder="Например: один клиент три дня отвечал по одному вопросу в час..."></textarea>
     </div>
   </section>
 
@@ -254,7 +273,7 @@ $$(".chips[data-f]").forEach(c=>{
 });
 
 function filled(){
-  const ids=["q1","q2","q3","q4","q5","q6","q7","q8","q9"];
+  const ids=["q1","q2","q3","q4","q5","q6","q7","q8","q9","q10"];
   const textDone=ids.filter(i=>state[i]&&String(state[i]).length>1).length;
   const featDone=FEATURES.filter(f=>state[f.id]).length?1:0;
   const total=ids.length+1;
@@ -262,7 +281,7 @@ function filled(){
 }
 function progress(){ const p=filled(); $("#fill").style.width=p+"%"; $("#pct").textContent=p+"%"; }
 
-const QNAMES={q3:"Что клиент получает в конце",q4:"Кто получает ответы",q5:"Язык вопросов",q6:"Как попадает в опросник",q7:"Напоминания",q8:"Время на одного клиента",q9:"Чего бот не должен делать"};
+const QNAMES={q3:"Что клиент получает в конце",q4:"Кому бот присылает ответы",q5:"Язык вопросов",q6:"Как попадает в опросник",q7:"Напоминания",q8:"Время на одного клиента",q9:"Чего бот не должен делать"};
 function summary(){
   const L=[];
   L.push("ОПРОСНИК ПО БОТУ — ответы Ольги");
@@ -280,6 +299,9 @@ function summary(){
   L.push("9) Чего бот не должен делать:");
   L.push(state.q9||"— не заполнено —");
   const picked=FEATURES.filter(f=>state[f.id]).map(f=>"- "+f.name);
+  L.push("");
+  L.push("10) Что ещё важно:");
+  L.push(state.q10||"— не заполнено —");
   L.push("");
   L.push("Что нужно из возможностей бота:");
   L.push(picked.length?picked.join("\n"):"— ничего не отмечено —");
